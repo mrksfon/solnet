@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class ThreadsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only('store');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +21,7 @@ class ThreadsController extends Controller
     {
         $threads = Thread::latest()->get();
 
-        return view('threads.index',[
+        return view('threads.index', [
             'threads' => $threads
         ]);
     }
@@ -34,23 +39,29 @@ class ThreadsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $thread = Thread::create([
+            'user_id' => auth()->id(),
+            'title' => \request('title'),
+            'body' => \request('body')
+        ]);
+
+        return redirect($thread->path());
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Thread  $thread
+     * @param \App\Models\Thread $thread
      * @return \Illuminate\Http\Response
      */
     public function show(Thread $thread)
     {
-        return view('threads.show',[
+        return view('threads.show', [
             'thread' => $thread
         ]);
     }
@@ -58,7 +69,7 @@ class ThreadsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Thread  $thread
+     * @param \App\Models\Thread $thread
      * @return \Illuminate\Http\Response
      */
     public function edit(Thread $thread)
@@ -69,8 +80,8 @@ class ThreadsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Thread  $thread
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Thread $thread
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Thread $thread)
@@ -81,7 +92,7 @@ class ThreadsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Thread  $thread
+     * @param \App\Models\Thread $thread
      * @return \Illuminate\Http\Response
      */
     public function destroy(Thread $thread)
