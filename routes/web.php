@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\RepliesController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ThreadsController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,8 +23,11 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Route::resource('threads',\App\Http\Controllers\ThreadsController::class);
+Route::get('/threads',[ThreadsController::class,'index']);
+Route::get('/threads/create',[ThreadsController::class,'create']);
+Route::get('/threads/{channel}/{thread}',[ThreadsController::class,'show']);
+Route::post('/threads',[ThreadsController::class,'store']);
 
-Route::post('/threads/{thread}/replies',[\App\Http\Controllers\RepliesController::class,'store']);
+Route::post('/threads/{channel}/{thread}/replies',[RepliesController::class,'store']);
