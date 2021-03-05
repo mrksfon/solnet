@@ -43,6 +43,4 @@ class ReadThreadsTest extends TestCase
         $response = $this->get($this->thread->path())
             ->assertSee($reply->body);
     }
-
-
 }
