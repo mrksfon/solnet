@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Channel;
 use App\Models\Thread;
-use App\Models\User;
 use App\Filters\ThreadFilters;
 use Illuminate\Http\Request;
 
@@ -71,7 +70,8 @@ class ThreadsController extends Controller
     public function show($channelId,Thread $thread)
     {
         return view('threads.show', [
-            'thread' => $thread
+            'thread' => $thread,
+            'replies' => $thread->replies()->paginate(25)
         ]);
     }
 
