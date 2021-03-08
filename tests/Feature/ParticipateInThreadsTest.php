@@ -6,13 +6,10 @@ namespace Tests\Feature;
 use App\Models\Reply;
 use App\Models\Thread;
 use App\Models\User;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class ParticipateInForumTest extends TestCase
+class ParticipateInThreadsTest extends TestCase
 {
     use DatabaseMigrations;
 
