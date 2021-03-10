@@ -5,6 +5,33 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Thread
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $channel_id
+ * @property string $title
+ * @property string $body
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Channel $channel
+ * @property-read \App\Models\User $creator
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Reply[] $replies
+ * @property-read int|null $replies_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread filter($filters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereChannelId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Thread extends Model
 {
     use HasFactory;
@@ -19,6 +46,10 @@ class Thread extends Model
 
         static::addGlobalScope('replyCount',function ($builder){
             $builder->withCount('replies');
+        });
+
+        static::deleting(function ($thread){
+            $thread->replies()->delete();
         });
     }
 

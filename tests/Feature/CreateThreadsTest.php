@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Channel;
+use App\Models\Reply;
 use App\Models\Thread;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
@@ -37,17 +38,18 @@ class CreateThreadsTest extends TestCase
         $this->get($response->headers->get('Location'))->assertSee($thread->title)->assertSee($thread->body);
     }
 
-    /** @test  */
+    /** @test */
     public function a_thread_requires_a_title()
     {
         $this->publishThread(['title' => null])->assertSessionHasErrors('title');
     }
 
-    /** @test  */
+    /** @test */
     public function a_thread_requires_a_body()
     {
         $this->publishThread(['body' => null])->assertSessionHasErrors('body');
     }
+
     /** @test */
     public function a_thread_requires_a_valid_channel()
     {
@@ -58,12 +60,49 @@ class CreateThreadsTest extends TestCase
         $this->publishThread(['channel_id' => 999])->assertSessionHasErrors('channel_id');
     }
 
+    /** @test */
+    public function guests_cannot_delete_threads()
+    {
+        $this->withExceptionHandling();
+
+        $thread = Thread::factory()->create();
+
+        $response = $this->delete($thread->path());
+
+        $response->assertRedirect('/login');
+    }
+
+    /** @test */
+    public function a_thread_can_be_deleted()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAs(User::factory()->create());
+
+        $thread = Thread::factory()->create();
+
+        $reply = Reply::factory()->create(['thread_id' => $thread->id]);
+
+        $response = $this->json('DELETE', $thread->path());
+
+        $response->assertStatus(204);
+
+        $this->assertDatabaseMissing('threads', ['id' => $thread->id]);
+        $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+    }
+
+    /** @test */
+    public function threads_may_only_be_deleted_by_those_who_have_permission()
+    {
+        // TODO:
+    }
+
     public function publishThread($overrides = [])
     {
         $this->actingAs(User::factory()->create());
 
         $thread = Thread::factory()->make($overrides);
 
-        return $this->post('/threads',$thread->toArray());
+        return $this->post('/threads', $thread->toArray());
     }
 }
