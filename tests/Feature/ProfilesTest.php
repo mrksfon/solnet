@@ -28,6 +28,8 @@ class ProfilesTest extends TestCase
 
         $user = User::factory()->create();
 
+        $this->actingAs($user);
+
         $thread = Thread::factory()->create(['user_id' => $user->id]);
 
         $this->get("/profiles/{$user->name}")
