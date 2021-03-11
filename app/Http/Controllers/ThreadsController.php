@@ -63,7 +63,7 @@ class ThreadsController extends Controller
             'body' => \request('body')
         ]);
 
-        return redirect($thread->path());
+        return redirect($thread->path())->with('flash','Your Thread has been published');
     }
 
     /**
@@ -78,29 +78,6 @@ class ThreadsController extends Controller
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(25)
         ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Thread $thread
-     * @return Response
-     */
-    public function edit(Thread $thread)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param Thread $thread
-     * @return Response
-     */
-    public function update(Request $request, Thread $thread)
-    {
-        //
     }
 
     /**
