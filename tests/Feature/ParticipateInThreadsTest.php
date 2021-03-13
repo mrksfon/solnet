@@ -45,4 +45,30 @@ class ParticipateInThreadsTest extends TestCase
 
         $this->post($thread->path() . '/replies', $reply->toArray())->assertSessionHasErrors('body');
     }
+
+    /** @test */
+    public function unauthorized_users_cannot_delete_replies()
+    {
+        $this->withExceptionHandling();
+
+        $reply = Reply::factory()->create();
+
+        $this->delete("/replies/{$reply->id}")->assertRedirect('/login');
+
+        $this->actingAs(User::factory()->create());
+
+        $this->delete("/replies/{$reply->id}")->assertStatus(403);
+    }
+
+    /** @test */
+    public function authorized_users_can_delete_replies()
+    {
+        $this->actingAs(User::factory()->create());
+
+        $reply = Reply::factory()->create(['user_id' => auth()->id()]);
+
+        $this->delete("/replies/{$reply->id}")->assertStatus(302);
+
+        $this->assertDatabaseMissing('replies',['id' => $reply->id]);
+    }
 }
