@@ -37,6 +37,15 @@ class Reply extends Model
     use HasFactory;
     use RecordsActivity;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($reply){
+            $reply->favorites->each->delete();
+        });
+    }
+
     protected $guarded = [];
 
     protected $with = ['owner', 'favorites'];
