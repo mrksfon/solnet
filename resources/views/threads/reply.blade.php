@@ -1,4 +1,4 @@
-<reply :attributes="{{$reply}}"inline-template v-cloak>
+<reply :attributes="{{$reply}}" inline-template v-cloak>
     <div>
         <div id="reply-{{$reply->id}}" class="card-header">
             <div class="level">
@@ -7,9 +7,11 @@
                         {{$reply->owner->name}}
                     </a> said {{$reply->created_at->diffForHumans()}}...
                 </h6>
-                <div>
-                    <favorite :reply="{{$reply}}"></favorite>
-                </div>
+                @auth
+                    <div>
+                        <favorite :reply="{{$reply}}"></favorite>
+                    </div>
+                @endauth
             </div>
         </div>
         <div class="card">
