@@ -8,12 +8,7 @@
                     </a> said {{$reply->created_at->diffForHumans()}}...
                 </h6>
                 <div>
-                    <form method="post" action="{{route('replies.favorite',$reply->id)}}">
-                        @csrf
-                        <button type="submit" class="btn btn-primary" {{$reply->isFavorited() ? 'disabled' : ''}}>
-                            {{$reply->favorites_count}} {{Str::plural('Favorite',$reply->favorites_count)}}
-                        </button>
-                    </form>
+                    <favorite :reply="{{$reply}}"></favorite>
                 </div>
             </div>
         </div>
@@ -33,11 +28,7 @@
             @can('update',$reply)
                 <div class="card-footer level">
                     <button class="btn btn-sm btn-primary mr-1" @click="editing=true">Edit</button>
-                    <form action="/replies/{{$reply->id}}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
+                    <button class="btn btn-sm btn-danger mr-1" @click="destroy">Delete</button>
                 </div>
             @endcan
         </div>
