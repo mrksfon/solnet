@@ -21,6 +21,7 @@
                             <a class="dropdown-item" href="/threads?by={{auth()->user()->name}}">My Threads</a>
                         @endauth
                         <a class="dropdown-item" href="/threads?popular=1">Popular Threads</a>
+                        <a class="dropdown-item" href="/threads/?unanswered=1">Unanswered Threads</a>
                     </div>
                 </div>
                 <li class="nav-item">

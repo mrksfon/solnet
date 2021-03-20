@@ -2198,6 +2198,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var data = _ref.data;
       this.dataSet = data;
       this.items = data.data;
+      window.scrollTo(0, 0);
     }
   }
 });
