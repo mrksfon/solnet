@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfilesController;
 use App\Http\Controllers\RepliesController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ThreadsController;
+use App\Http\Controllers\ThreadSubscriptionsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -39,7 +40,14 @@ Route::post('/threads/{channel}/{thread}/replies',[RepliesController::class,'sto
 Route::patch('/replies/{reply}',[RepliesController::class,'update']);
 Route::delete('/replies/{reply}',[RepliesController::class,'destroy']);
 
+Route::post('/threads/{channel}/{thread}/subscriptions',[ThreadSubscriptionsController::class,'store']);
+Route::delete('/threads/{channel}/{thread}/subscriptions',[ThreadSubscriptionsController::class,'destroy']);
+
 Route::post('/replies/{reply}/favorites',[FavoritesController::class,'store'])->name('replies.favorite');
 Route::delete('/replies/{reply}/favorites',[FavoritesController::class,'destroy'])->name('replies.destroy');
 
 Route::get('/profiles/{user}',[ProfilesController::class,'show'])->name('profile');
+
+Route::get('/profiles/{user}/notifications',[\App\Http\Controllers\UserNotificationsController::class,'index']);
+Route::delete('/profiles/{user}/notifications/{notification}',[\App\Http\Controllers\UserNotificationsController::class,'destroy']);
+

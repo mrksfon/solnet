@@ -55,6 +55,8 @@
                         </li>
                     @endif
                 @else
+
+                    <user-notifications></user-notifications>
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -76,6 +78,7 @@
                             </form>
                         </div>
                     </li>
+
                 @endguest
             </ul>
         </div>

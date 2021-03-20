@@ -31,6 +31,7 @@
                     <replies @removed="repliesCount--" @added="repliesCount++"></replies>
 
                 </div>
+
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
@@ -40,9 +41,13 @@
                                 currently has <span v-text="repliesCount"></span>
                                 {{\Illuminate\Support\Str::plural('comment',$thread->replies_count)}}
                             </p>
+                            <p>
+                                <subscribe-button :active="{{json_encode($thread->isSubscribedTo)}}"></subscribe-button>
+                            </p>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </thread-view>
