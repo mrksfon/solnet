@@ -12,7 +12,7 @@ class ThreadsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index','show']);
+        $this->middleware('auth')->except(['index', 'show']);
     }
 
     /**
@@ -20,11 +20,11 @@ class ThreadsController extends Controller
      *
      * @return Response
      */
-    public function index(Channel $channel,ThreadFilters $filters)
+    public function index(Channel $channel, ThreadFilters $filters)
     {
         $threads = $this->getThreads($filters, $channel);
 
-        if(\request()->wantsJson()){
+        if (\request()->wantsJson()) {
             return $threads;
         }
 
@@ -51,7 +51,7 @@ class ThreadsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'title' => 'required',
             'body' => 'required',
             'channel_id' => 'required|exists:channels,id'
@@ -63,7 +63,7 @@ class ThreadsController extends Controller
             'body' => \request('body')
         ]);
 
-        return redirect($thread->path())->with('flash','Your Thread has been published');
+        return redirect($thread->path())->with('flash', 'Your Thread has been published');
     }
 
     /**
@@ -72,9 +72,14 @@ class ThreadsController extends Controller
      * @param Thread $thread
      * @return Response
      */
-    public function show($channel,Thread $thread)
+    public function show($channel, Thread $thread)
     {
-        return view('threads.show',compact('thread'));
+        if (auth()->check()) {
+            auth()->user()->read($thread);
+        }
+
+
+        return view('threads.show', compact('thread'));
     }
 
     /**
@@ -84,14 +89,14 @@ class ThreadsController extends Controller
      * @return Response
      * @throws \Exception
      */
-    public function destroy($channel,Thread $thread)
+    public function destroy($channel, Thread $thread)
     {
-        $this->authorize('update',$thread);
+        $this->authorize('update', $thread);
 
         $thread->delete();
 
-        if(\request()->wantsJson()){
-            return \response([],204);
+        if (\request()->wantsJson()) {
+            return \response([], 204);
         }
 
         return redirect('/threads');

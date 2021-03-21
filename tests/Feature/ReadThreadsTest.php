@@ -43,7 +43,7 @@ class ReadThreadsTest extends TestCase
         $channel = Channel::factory()->create();
 
         $threadInChannel = Thread::factory()->create(['channel_id' => $channel->id]);
-        $threadNotInChannel = Thread::factory()->create();
+        $threadNotInChannel = Thread::factory()->create(['channel_id' => 999]);
 
         $this->get('/threads/' . $channel->slug)
             ->assertSee($threadInChannel->title)
