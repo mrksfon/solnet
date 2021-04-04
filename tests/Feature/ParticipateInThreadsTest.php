@@ -7,12 +7,12 @@ use App\Models\Reply;
 use App\Models\Thread;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Tests\TestCase;
 
 class ParticipateInThreadsTest extends TestCase
 {
     use DatabaseMigrations;
-
 
     /** @test */
     public function unauthenticated_users_may_not_add_replies()
@@ -45,7 +45,7 @@ class ParticipateInThreadsTest extends TestCase
 
         $reply = Reply::factory()->make(['body' => null]);
 
-        $this->post($thread->path() . '/replies', $reply->toArray())->assertStatus(422);
+        $this->post($thread->path() . '/replies', $reply->toArray())->assertSessionHasErrors('body');
     }
 
     /** @test */
@@ -103,30 +103,27 @@ class ParticipateInThreadsTest extends TestCase
     /** @test */
     public function replies_that_contain_spam_may_not_be_created()
     {
-        $this->withoutExceptionHandling();
-
         $this->be($user = User::factory()->create());
 
         $thread = Thread::factory()->create();
 
         $reply = Reply::factory()->make(['body' => 'Yahoo Customer Support']);
 
-        $this->post($thread->path() . '/replies', $reply->toArray())->assertStatus(422);
+        $this->json('POST', $thread->path() . '/replies', $reply->toArray())->assertStatus(422);
     }
 
     /** @test */
     public function users_may_only_reply_a_maximum_of_once_per_minute()
     {
-        $this->withoutExceptionHandling();
-
         $this->actingAs(User::factory()->create());
 
         $thread = Thread::factory()->create();
 
-        $reply = Reply::factory()->make(['body' => 'My simple reply']);
+        $reply = Reply::factory()->make();
 
         $this->post($thread->path() . '/replies', $reply->toArray())->assertStatus(201);
 
-        $this->post($thread->path() . '/replies', $reply->toArray())->assertStatus(422);
+        $this->post($thread->path() . '/replies', $reply->toArray())->assertStatus(429);
+
     }
 }
