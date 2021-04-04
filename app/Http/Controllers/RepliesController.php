@@ -16,48 +16,53 @@ class RepliesController extends Controller
         $this->middleware('auth')->except('index');
     }
 
-    public function index(Channel $channel,Thread $thread)
+    public function index(Channel $channel, Thread $thread)
     {
         return $thread->replies()->paginate(25);
     }
 
-    public function store($channelId,Thread $thread,Spam $spam)
+    public function store($channelId, Thread $thread)
     {
-        $this->validate(\request(),[
-            'body' => 'required'
-        ]);
-
-        $spam->detect(\request('body'));
+        $this->validateReply();
 
         $reply = $thread->addReply([
-           'body' => \request('body'),
+            'body' => \request('body'),
             'user_id' => auth()->id()
         ]);
 
-        if(request()->expectsJson()){
+        if (request()->expectsJson()) {
             return $reply->load('owner');
         }
 
-        return back()->with('flash','Your reply has been left');
+        return back()->with('flash', 'Your reply has been left');
     }
 
     public function update(Reply $reply)
     {
-        $this->authorize('update',$reply);
+        $this->authorize('update', $reply);
+
+        $this->validateReply();
 
         $reply->update(['body' => \request('body')]);
     }
 
     public function destroy(Reply $reply)
     {
-        $this->authorize('update',$reply);
+        $this->authorize('update', $reply);
 
         $reply->delete();
 
-        if(request()->expectsJson()){
+        if (request()->expectsJson()) {
             return response(['status' => 'Reply Deleted']);
         }
 
         return back();
+    }
+
+    protected function validateReply()
+    {
+        $this->validate(request(), ['body' => 'required']);
+
+        resolve(Spam::class)->detect(request('body'));
     }
 }
