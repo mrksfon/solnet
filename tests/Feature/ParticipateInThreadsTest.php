@@ -31,9 +31,9 @@ class ParticipateInThreadsTest extends TestCase
 
         $this->post($thread->path() . '/replies', $reply->toArray());
 
-        $this->assertDatabaseHas('replies',['body' => $reply->body]);
+        $this->assertDatabaseHas('replies', ['body' => $reply->body]);
 
-        $this->assertEquals(1,$thread->fresh()->replies_count);
+        $this->assertEquals(1, $thread->fresh()->replies_count);
     }
 
     /** @test */
@@ -45,7 +45,7 @@ class ParticipateInThreadsTest extends TestCase
 
         $reply = Reply::factory()->make(['body' => null]);
 
-        $this->post($thread->path() . '/replies', $reply->toArray())->assertSessionHasErrors('body');
+        $this->post($thread->path() . '/replies', $reply->toArray())->assertStatus(422);
     }
 
     /** @test */
@@ -73,7 +73,7 @@ class ParticipateInThreadsTest extends TestCase
 
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
 
-        $this->assertEquals(0,$reply->thread->fresh()->replies_count);
+        $this->assertEquals(0, $reply->thread->fresh()->replies_count);
     }
 
     /** @test */
@@ -103,7 +103,7 @@ class ParticipateInThreadsTest extends TestCase
     /** @test */
     public function replies_that_contain_spam_may_not_be_created()
     {
-//        $this->withoutExceptionHandling();
+        $this->withoutExceptionHandling();
 
         $this->be($user = User::factory()->create());
 
@@ -111,8 +111,22 @@ class ParticipateInThreadsTest extends TestCase
 
         $reply = Reply::factory()->make(['body' => 'Yahoo Customer Support']);
 
-        $this->expectException(\Exception::class);
+        $this->post($thread->path() . '/replies', $reply->toArray())->assertStatus(422);
+    }
 
-        $this->post($thread->path() . '/replies', $reply->toArray());
+    /** @test */
+    public function users_may_only_reply_a_maximum_of_once_per_minute()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAs(User::factory()->create());
+
+        $thread = Thread::factory()->create();
+
+        $reply = Reply::factory()->make(['body' => 'My simple reply']);
+
+        $this->post($thread->path() . '/replies', $reply->toArray())->assertStatus(201);
+
+        $this->post($thread->path() . '/replies', $reply->toArray())->assertStatus(422);
     }
 }

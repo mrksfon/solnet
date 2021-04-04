@@ -70,6 +70,11 @@ class Reply extends Model
         return $this->belongsTo(Thread::class);
     }
 
+    public function wasJustPublished()
+    {
+        return $this->created_at->gt(now()->subMinute());
+    }
+
     public function path()
     {
         return $this->thread->path() . "#reply-{$this->id}";
