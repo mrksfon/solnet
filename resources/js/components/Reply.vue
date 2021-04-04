@@ -54,26 +54,30 @@ export default {
     },
 
     computed: {
-        ago(){
+        ago() {
             return moment(this.data.created_at).fromNow() + '...';
         },
         signedIn() {
             return window.App.signedIn;
         },
-        canUpdate(){
+        canUpdate() {
             return this.authorize(user => this.data.user_id == user.id);
         }
     },
 
     methods: {
         update() {
-            axios.patch('/replies/' + this.data.id, {
-                body: this.body
-            });
+            try {
+                axios.patch('/replies/' + this.data.id, {
+                    body: this.body
+                });
 
-            this.editing = false;
+                this.editing = false;
 
-            flash('Updated!');
+                flash('Updated!');
+            } catch (error) {
+                flash(error.response.data, 'danger');
+            }
         },
         destroy() {
             axios.delete('/replies/' + this.data.id);

@@ -1916,12 +1916,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['message'],
   data: function data() {
     return {
       body: '',
+      level: 'success',
       show: false
     };
   },
@@ -1932,13 +1932,14 @@ __webpack_require__.r(__webpack_exports__);
       this.flash(this.message);
     }
 
-    window.events.$on('flash', function (message) {
-      return _this.flash(message);
+    window.events.$on('flash', function (data) {
+      return _this.flash(data);
     });
   },
   methods: {
-    flash: function flash(message) {
-      this.body = message;
+    flash: function flash(data) {
+      this.body = data.message;
+      this.level = data.level;
       this.show = true;
       this.hide();
     },
@@ -2019,12 +2020,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                _context.prev = 0;
+                _context.next = 3;
                 return axios.post(location.pathname + '/replies', {
                   body: _this.body
                 });
 
-              case 2:
+              case 3:
                 _yield$axios$post = _context.sent;
                 data = _yield$axios$post.data;
                 _this.body = '';
@@ -2032,12 +2034,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 _this.$emit('created', data);
 
-              case 7:
+                _context.next = 13;
+                break;
+
+              case 10:
+                _context.prev = 10;
+                _context.t0 = _context["catch"](0);
+                flash(_context.t0.response.data, 'danger');
+
+              case 13:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[0, 10]]);
       }))();
     }
   }
@@ -2288,11 +2298,15 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     update: function update() {
-      axios.patch('/replies/' + this.data.id, {
-        body: this.body
-      });
-      this.editing = false;
-      flash('Updated!');
+      try {
+        axios.patch('/replies/' + this.data.id, {
+          body: this.body
+        });
+        this.editing = false;
+        flash('Updated!');
+      } catch (error) {
+        flash(error.response.data, 'danger');
+      }
     },
     destroy: function destroy() {
       axios["delete"]('/replies/' + this.data.id);
@@ -2512,7 +2526,11 @@ Vue.component('user-notifications', __webpack_require__(/*! ./components/UserNot
 window.events = new Vue();
 
 window.flash = function (message) {
-  window.events.$emit('flash', message);
+  var level = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'success';
+  window.events.$emit('flash', {
+    message: message,
+    level: level
+  });
 };
 
 var app = new Vue({
@@ -61274,17 +61292,15 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      directives: [
-        { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
-      ],
-      staticClass: "alert alert-success alert-flash",
-      attrs: { role: "alert" }
-    },
-    [_c("strong", [_vm._v("Success")]), _vm._v(" " + _vm._s(_vm.body) + "\n")]
-  )
+  return _c("div", {
+    directives: [
+      { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
+    ],
+    staticClass: "alert alert-flash",
+    class: "alert-" + _vm.level,
+    attrs: { role: "alert" },
+    domProps: { textContent: _vm._s(_vm.body) }
+  })
 }
 var staticRenderFns = []
 render._withStripped = true
