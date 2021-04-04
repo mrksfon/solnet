@@ -103,7 +103,7 @@ class ParticipateInThreadsTest extends TestCase
     /** @test */
     public function replies_that_contain_spam_may_not_be_created()
     {
-        $this->withoutExceptionHandling();
+//        $this->withoutExceptionHandling();
 
         $this->be($user = User::factory()->create());
 

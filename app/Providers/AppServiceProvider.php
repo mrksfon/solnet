@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Channel;
+use App\Rules\SpamFree;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -38,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('channels', $channels);
         });
 
+//        \Validator::extend('spamfree', 'App\Rules\SpamFree@passes');
 
         Paginator::useBootstrap();
     }
