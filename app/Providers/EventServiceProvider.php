@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use App\Events\ThreadHasNewReply;
+use App\Events\ThreadReceivedNewReply;
+use App\Listeners\NotifyMentionedUsers;
+use App\Listeners\NotifySubscribers;
 use App\Listeners\NotifyThreadSubscribers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -20,6 +23,10 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        ThreadReceivedNewReply::class => [
+            NotifyMentionedUsers::class,
+            NotifySubscribers::class
+        ]
     ];
 
     /**

@@ -6,6 +6,8 @@ use App\Http\Requests\CreatePostRequest;
 use App\Models\Channel;
 use App\Models\Reply;
 use App\Models\Thread;
+use App\Models\User;
+use App\Notifications\YouWereMentioned;
 use App\Rules\SpamFree;
 use Illuminate\Http\Request;
 

@@ -41,15 +41,15 @@ class Reply extends Model
     {
         parent::boot();
 
-        static::created(function ($reply){
+        static::created(function ($reply) {
             $reply->thread->increment('replies_count');
         });
 
-        static::deleting(function ($reply){
+        static::deleting(function ($reply) {
             $reply->favorites->each->delete();
         });
 
-        static::deleted(function ($reply){
+        static::deleted(function ($reply) {
             $reply->thread->decrement('replies_count');
         });
     }
@@ -58,7 +58,7 @@ class Reply extends Model
 
     protected $with = ['owner', 'favorites'];
 
-    protected $appends = ['favoritesCount','isFavorited'];
+    protected $appends = ['favoritesCount', 'isFavorited'];
 
     public function owner()
     {
@@ -73,6 +73,13 @@ class Reply extends Model
     public function wasJustPublished()
     {
         return $this->created_at->gt(now()->subMinute());
+    }
+
+    public function mentionedUsers()
+    {
+        preg_match_all('/\@([^\s\.]+)/', $this->body, $matches);
+
+        return $matches[1];
     }
 
     public function path()
